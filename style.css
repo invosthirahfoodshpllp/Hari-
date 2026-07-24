@@ -726,11 +726,12 @@ img { max-width: 100%; display: block; }
 .nutrition-integrated {
     background: var(--card-bg);
     border-radius: var(--radius);
-    padding: 2.5rem;
+    padding: 1.5rem 2rem;
     box-shadow: var(--shadow);
     border-top: 4px solid var(--accent-green);
     position: relative;
     overflow: hidden;
+    height: 100%;
 }
 .nutrition-integrated::after {
     content: '';
@@ -742,17 +743,17 @@ img { max-width: 100%; display: block; }
     pointer-events: none;
 }
 .nutrition-integrated .nutrition-header {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 .nutrition-integrated .nutrition-header h4 {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 800;
     color: var(--accent-green);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
     letter-spacing: -0.5px;
 }
 .nutrition-integrated .nutrition-header p {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text-muted);
     font-weight: 500;
 }
@@ -761,29 +762,29 @@ img { max-width: 100%; display: block; }
     justify-content: space-between;
     align-items: center;
     background: var(--bg-color);
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
     border-radius: 12px;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     border: 1px solid var(--border);
 }
 .nutrition-calories h3:first-child {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--text-color);
     margin: 0;
 }
 .nutrition-calories h3:last-child {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 900;
     color: var(--accent-green);
     margin: 0;
 }
 .nutrition-calories .per-serving {
     display: block;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
     font-weight: 400;
-    margin-top: 0.2rem;
+    margin-top: 0.1rem;
 }
 .nutrition-list {
     list-style: none;
@@ -793,7 +794,7 @@ img { max-width: 100%; display: block; }
 .nutrition-list li {
     display: flex;
     justify-content: space-between;
-    padding: 0.75rem 0;
+    padding: 0.4rem 0;
     border-bottom: 1px dashed var(--border);
     font-size: 1rem;
     color: var(--text-color);
