@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Sthirah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .cart-page {
+            padding: 4rem 0;
+            min-height: 80vh;
+            background-color: var(--bg-color);
+        }
+        .cart-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+        }
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        .cart-header h1 {
+            font-size: 1.8rem;
+            color: var(--text-color);
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .cart-item-info {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .cart-item-details h3 {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 0.3rem;
+        }
+        .cart-item-details p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.3rem 0.5rem;
+        }
+        .qty-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .remove-btn {
+            color: var(--accent-red);
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .remove-btn:hover { text-decoration: underline; }
+        .cart-summary {
+            margin-top: 2rem;
+            text-align: right;
+        }
+        .cart-summary h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .checkout-btn {
+            background: var(--accent-green);
+            color: var(--white);
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background var(--transition);
+        }
+        .checkout-btn:hover { background: #157936; }
+        .empty-cart {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <!-- Simple Navbar -->
+    <header class="navbar" style="position: static;">
+        <div class="container nav-content">
+            <a href="index.html" class="logo"><img src="assets/logo.png" alt="Sthirah Logo" class="logo-img"></a>
+            <nav class="nav-links">
+                <a href="index.html">Continue Shopping</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="cart-page">
+        <div class="container cart-container">
+            <div class="cart-header">
+                <h1>Your Cart</h1>
+                <span id="cartCountDisplay">0 items</span>
+            </div>
+            
+            <div id="cartItemsContainer">
+                <!-- Items injected here by JS -->
+            </div>
+
+            <div class="cart-summary" id="cartSummary" style="display: none;">
+                <h3>Total: &#8377;<span id="cartTotal">0</span></h3>
+                <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, onAuthStateChanged } from './firebase-config.js';
+
+        let cart = JSON.parse(localStorage.getItem('sthirah_cart') || '[]');
+        const container = document.getElementById('cartItemsContainer');
+        const summary = document.getElementById('cartSummary');
+        const totalSpan = document.getElementById('cartTotal');
+        const countDisplay = document.getElementById('cartCountDisplay');
+
+        // Check auth (optional for viewing cart, but good to know)
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // If they logged out in another tab, redirect to home
+                window.location.href = 'index.html';
+            }
+        });
+
+        function renderCart() {
+            container.innerHTML = '';
+            let total = 0;
+            let count = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = '<div class="empty-cart"><h2>Your cart is empty</h2><br><a href="index.html#product" class="checkout-btn">Shop Now</a></div>';
+                summary.style.display = 'none';
+                countDisplay.textContent = '0 items';
+                return;
+            }
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                count += item.qty;
+
+                const row = document.createElement('div');
+                row.className = 'cart-item';
+                row.innerHTML = `
+                    <div class="cart-item-info">
+                        <img src="assets/productfront.jpeg" class="cart-item-img" alt="Jaggery">
+                        <div class="cart-item-details">
+                            <h3>${item.name}</h3>
+                            <p>Size: ${item.size}</p>
+                            <p>Price: &#8377;${item.price}</p>
+                        </div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                        </div>
+                        <strong>&#8377;${itemTotal}</strong>
+                        <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            totalSpan.textContent = total;
+            countDisplay.textContent = `${count} items`;
+            summary.style.display = 'block';
+        }
+
+        window.updateQty = (index, delta) => {
+            if (cart[index].qty + delta > 0) {
+                cart[index].qty += delta;
+                saveAndRender();
+            }
+        };
+
+        window.removeItem = (index) => {
+            cart.splice(index, 1);
+            saveAndRender();
+        };
+
+        function saveAndRender() {
+            localStorage.setItem('sthirah_cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        renderCart();
+    </script>
+</body>
+</html>

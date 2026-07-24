@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Sthirah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .checkout-page {
+            padding: 4rem 0;
+            background: var(--bg-color);
+            min-height: 80vh;
+        }
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .form-card, .order-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .form-card h2, .order-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: var(--white);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        
+        .order-summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border);
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+        .place-order-btn {
+            width: 100%;
+            background: var(--accent-green);
+            color: var(--white);
+            border: none;
+            padding: 1rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .place-order-btn:hover { background: #157936; }
+        .place-order-btn:disabled { background: #999; cursor: not-allowed; }
+        
+        /* Loading Overlay */
+        #loader {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar" style="position: static;">
+        <div class="container nav-content">
+            <a href="index.html" class="logo"><img src="assets/logo.png" alt="Sthirah Logo" class="logo-img"></a>
+            <nav class="nav-links">
+                <a href="cart.html">&larr; Back to Cart</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="checkout-page">
+        <div class="container checkout-grid">
+            <!-- Left: Customer Details -->
+            <div class="form-card">
+                <h2>Customer Details</h2>
+                <form id="checkoutForm">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="custName" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="custPhone" required placeholder="9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label>Shipping Address *</label>
+                        <textarea id="custAddress" required placeholder="123 Street, City..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Pincode / ZIP *</label>
+                        <input type="text" id="custPin" required placeholder="636015">
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right: Order Summary -->
+            <div class="order-card">
+                <h2>Order Summary</h2>
+                <div id="summaryItems"></div>
+                <div class="order-total">
+                    <span>Total Amount</span>
+                    <span>&#8377;<span id="summaryTotal">0</span></span>
+                </div>
+                <button type="submit" form="checkoutForm" class="place-order-btn" id="placeOrderBtn">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loader">
+        <p>Processing your order...</p>
+    </div>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, collection, addDoc, serverTimestamp } from './firebase-config.js';
+
+        const cart = JSON.parse(localStorage.getItem('sthirah_cart') || '[]');
+        if (cart.length === 0) {
+            window.location.href = 'index.html'; // No cart, redirect
+        }
+
+        let currentUser = null;
+        let cartTotal = 0;
+
+        // Populate Summary
+        const summaryContainer = document.getElementById('summaryItems');
+        cart.forEach(item => {
+            const itemTotal = item.qty * item.price;
+            cartTotal += itemTotal;
+            summaryContainer.innerHTML += `
+                <div class="order-summary-item">
+                    <span>${item.name} (${item.size}) x ${item.qty}</span>
+                    <span>&#8377;${itemTotal}</span>
+                </div>
+            `;
+        });
+        document.getElementById('summaryTotal').textContent = cartTotal;
+
+        // Auth guard
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // Must be logged in to checkout
+                window.location.href = 'login.html?redirect=checkout.html';
+            } else {
+                currentUser = user;
+                // Prefill name if available
+                if (user.displayName) document.getElementById('custName').value = user.displayName;
+            }
+        });
+
+        // Handle Submit
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const btn = document.getElementById('placeOrderBtn');
+            const loader = document.getElementById('loader');
+            
+            btn.disabled = true;
+            loader.style.display = 'flex';
+
+            const orderData = {
+                customerId: currentUser.uid,
+                customerEmail: currentUser.email,
+                customerName: document.getElementById('custName').value,
+                customerPhone: document.getElementById('custPhone').value,
+                customerAddress: document.getElementById('custAddress').value,
+                customerPin: document.getElementById('custPin').value,
+                items: cart,
+                totalAmount: cartTotal,
+                status: 'Pending',
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                // Save to Firestore 'orders' collection
+                await addDoc(collection(db, 'orders'), orderData);
+                
+                // Clear cart
+                localStorage.removeItem('sthirah_cart');
+                
+                // Show success
+                loader.innerHTML = '<p style="color:#1b9644;">✅ Order Placed Successfully!</p><p style="font-size:1rem;margin-top:1rem;">Redirecting to home...</p>';
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000);
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert("There was an error processing your order. Please try again.");
+                btn.disabled = false;
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
