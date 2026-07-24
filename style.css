@@ -722,57 +722,51 @@ img { max-width: 100%; display: block; }
     transform: translateY(-2px);
 }
 
-/* ===== NUTRITION CARD ===== */
-.nutrition-card {
-    background: var(--card-bg);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2rem;
-    max-width: 600px;
-    margin: 0 auto;
-    box-shadow: var(--shadow);
+/* ===== INTEGRATED NUTRITION INFO ===== */
+.nutrition-integrated {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
 }
-.nutrition-header {
-    border-bottom: 4px solid var(--text-color);
-    padding-bottom: 1rem;
+.nutrition-integrated .nutrition-header {
     margin-bottom: 1rem;
 }
-.nutrition-header h3 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-}
-.nutrition-header p {
+.nutrition-integrated h4 {
     font-size: 1.1rem;
-    color: var(--text-muted);
+    font-weight: 700;
+    color: var(--text-color);
 }
-.nutrition-item {
+.nutrition-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.nutrition-list li {
     display: flex;
     justify-content: space-between;
-    padding: 0.8rem 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 1.05rem;
-    font-weight: 600;
+    padding: 0.6rem 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.95rem;
+    color: var(--text-color);
 }
-.nutrition-item.sub-item {
-    padding-left: 2rem;
-    font-weight: 400;
-    color: var(--text-muted);
-}
-.nutrition-item:last-child {
+.nutrition-list li:last-child {
     border-bottom: none;
-    padding-bottom: 0;
+}
+.nutrition-list li span {
+    color: var(--text-muted);
 }
 
 /* ===== CUSTOMER REVIEWS ===== */
 .reviews-section {
     padding: 6rem 0;
-    background-color: var(--white);
+    background-color: var(--bg-color); /* Blends with the natural theme */
+    border-top: 1px solid var(--border);
 }
 .reviews-title {
     font-size: clamp(2rem, 4vw, 2.8rem);
     font-weight: 800;
-    margin-bottom: 3rem;
+    margin-bottom: 3.5rem;
+    color: var(--text-color);
 }
 .reviews-grid {
     display: grid;
@@ -780,30 +774,52 @@ img { max-width: 100%; display: block; }
     gap: 2rem;
 }
 .review-card {
-    background: var(--bg-color);
+    background: var(--card-bg);
     padding: 2.5rem 2rem;
     border-radius: var(--radius);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    box-shadow: var(--shadow);
     text-align: left;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border-top: 4px solid var(--accent-green); /* Elegant brand accent */
+    position: relative;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+.review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+}
+.review-card::before {
+    content: '"';
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 4rem;
+    font-family: serif;
+    color: rgba(27, 150, 68, 0.1);
+    line-height: 1;
 }
 .stars {
     font-size: 1.2rem;
     margin-bottom: 1.25rem;
+    color: #f5b041; /* Gold star color */
+    letter-spacing: 2px;
 }
 .review-text {
     font-size: 1.05rem;
-    color: var(--text-muted);
-    font-style: italic;
+    color: var(--text-color);
     line-height: 1.7;
     margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
 }
 .reviewer {
     font-weight: 700;
-    color: var(--text-color);
+    color: var(--accent-green);
     font-size: 1.1rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
 }
 
 /* ===== ABOUT SECTION ===== */
