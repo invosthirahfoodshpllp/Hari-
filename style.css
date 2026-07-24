@@ -507,9 +507,9 @@ img { max-width: 100%; display: block; }
 .product-image-container {
     position: relative;
     background-color: var(--white);
-    padding: 2rem;
+    padding: 1.5rem;
     width: 100%;
-    max-width: 380px;
+    max-width: 480px;
     display: flex;
     justify-content: center;
     border-radius: var(--radius);
@@ -532,7 +532,7 @@ img { max-width: 100%; display: block; }
 /* Product Flip Card */
 .product-flip-card {
     width: 100%;
-    max-width: 280px;
+    max-width: 400px;
     perspective: 1000px;
     margin: 0 auto;
 }
