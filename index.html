@@ -220,12 +220,22 @@
                             </div>
                             <div class="custom-select__options" id="selectOptions">
                                 <div class="custom-option" data-value="">Select Size</div>
+                                <div class="custom-option" data-value="500g">500g</div>
                                 <div class="custom-option" data-value="1kg">1kg</div>
-                                <div class="custom-option" data-value="2kg">2kg</div>
                             </div>
                         </div>
                         <input type="hidden" id="size" name="size" value="">
                     </div>
+                    
+                    <div class="qty-selector" style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 1.25rem;">
+                        <label style="font-size: 0.85rem; font-weight: 600;">Qty:</label>
+                        <div style="display:flex; align-items:center; border: 1.5px solid var(--border); border-radius: 6px; overflow: hidden; max-width: 120px;">
+                            <button type="button" id="qtyMinus" style="flex:1; border:none; background:transparent; padding: 0.4rem; cursor:pointer; font-weight:bold; font-size:1.1rem; color:var(--text-color); transition:background 0.3s;">-</button>
+                            <input type="number" id="productQty" value="1" min="1" max="50" style="width: 40px; text-align:center; border:none; font-weight:700; font-family:inherit; font-size:0.95rem; background:var(--white);" readonly>
+                            <button type="button" id="qtyPlus" style="flex:1; border:none; background:transparent; padding: 0.4rem; cursor:pointer; font-weight:bold; font-size:1.1rem; color:var(--text-color); transition:background 0.3s;">+</button>
+                        </div>
+                    </div>
+
                     <button class="add-to-cart" id="addToCartBtn">Add to Cart</button>
                 </div>
             </div>

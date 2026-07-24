@@ -207,6 +207,22 @@ document.addEventListener('click', () => {
     customSelect.classList.remove('open');
 });
 
+// ===== Qty Selector Logic =====
+const qtyMinus = document.getElementById('qtyMinus');
+const qtyPlus = document.getElementById('qtyPlus');
+const productQty = document.getElementById('productQty');
+
+if (qtyMinus && qtyPlus && productQty) {
+    qtyMinus.addEventListener('click', () => {
+        let val = parseInt(productQty.value) || 1;
+        if (val > 1) productQty.value = val - 1;
+    });
+    qtyPlus.addEventListener('click', () => {
+        let val = parseInt(productQty.value) || 1;
+        if (val < 50) productQty.value = val + 1;
+    });
+}
+
 // ===== Add to Cart Button Feedback & Logic =====
 const cartBtn = document.getElementById('addToCartBtn');
 if (cartBtn) {
@@ -233,19 +249,24 @@ if (cartBtn) {
         // Add to local cart
         const cart = JSON.parse(localStorage.getItem('sthirah_cart') || '[]');
         const size = sizeInput.value;
-        const price = size === '1kg' ? 110 : 210; // example pricing
+        const price = size === '1kg' ? 110 : 58; 
+        const qtyToAdd = parseInt(productQty.value) || 1;
         
         const existing = cart.find(i => i.size === size);
         if (existing) {
-            existing.qty += 1;
+            existing.qty += qtyToAdd;
         } else {
-            cart.push({ id: 'jaggery_powder', name: 'Sthirah Jaggery Powder', size, price, qty: 1 });
+            cart.push({ id: 'jaggery_powder', name: 'Sthirah Jaggery Powder', size, price, qty: qtyToAdd });
         }
         localStorage.setItem('sthirah_cart', JSON.stringify(cart));
         updateCartCount();
 
-        cartBtn.textContent = '✅ Added to Cart!';
+        cartBtn.textContent = '✓ Added to Cart!';
         cartBtn.style.backgroundColor = '#1b9644';
+        
+        // Reset qty
+        productQty.value = 1;
+
         setTimeout(() => {
             cartBtn.textContent = 'Add to Cart';
             cartBtn.style.backgroundColor = '';
