@@ -954,7 +954,8 @@ img { max-width: 100%; display: block; }
     .benefits-grid { grid-template-columns: repeat(2, 1fr); }
 
     .showcase-grid,
-    .about-grid {
+    .about-grid,
+    .honest-grid {
         grid-template-columns: 1fr;
         text-align: center;
     }
