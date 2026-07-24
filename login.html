@@ -402,8 +402,15 @@
         window.handleSendOtp = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('sendOtpBtn');
-            const phoneNumber = document.getElementById('phoneNumber').value;
+            let phoneNumber = document.getElementById('phoneNumber').value;
             
+            // Clean up the phone number format to prevent Firebase errors
+            phoneNumber = phoneNumber.replace(/\s+/g, ''); // Remove all spaces
+            if (!phoneNumber.startsWith('+')) {
+                // If they forgot the country code, assume +91 (India)
+                phoneNumber = '+91' + phoneNumber;
+            }
+
             btn.disabled = true;
             btn.textContent = 'Sending...';
             try {
