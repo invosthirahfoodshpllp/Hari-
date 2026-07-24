@@ -175,37 +175,7 @@ const cardObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.benefit-card').forEach(card => cardObserver.observe(card));
 
-// ===== Custom Size Dropdown =====
-const customSelect = document.getElementById('customSelect');
-const selectTrigger = document.getElementById('selectTrigger');
-const selectOptions = document.getElementById('selectOptions');
-const selectedText = document.getElementById('selectedText');
-const sizeInput = document.getElementById('size');
-
-selectTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    customSelect.classList.toggle('open');
-});
-
-document.querySelectorAll('.custom-option').forEach(option => {
-    option.addEventListener('click', () => {
-        const value = option.getAttribute('data-value');
-        const label = option.textContent;
-        selectedText.textContent = label;
-        sizeInput.value = value;
-        // mark selected
-        document.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
-        if (value) option.classList.add('selected');
-        customSelect.classList.remove('open');
-        // reset border
-        customSelect.querySelector('.custom-select__trigger').style.borderColor = '';
-    });
-});
-
-// Close on outside click
-document.addEventListener('click', () => {
-    customSelect.classList.remove('open');
-});
+// Size dropdown logic removed as requested by user
 
 // ===== Qty Selector Logic =====
 const qtyMinus = document.getElementById('qtyMinus');
@@ -234,22 +204,10 @@ if (cartBtn) {
             return;
         }
 
-        if (!sizeInput.value) {
-            const trigger = customSelect.querySelector('.custom-select__trigger');
-            trigger.style.borderColor = 'red';
-            trigger.style.boxShadow = '0 0 0 3px rgba(255,0,0,0.15)';
-            customSelect.classList.add('open');
-            setTimeout(() => {
-                trigger.style.borderColor = '';
-                trigger.style.boxShadow = '';
-            }, 2000);
-            return;
-        }
-
         // Add to local cart
         const cart = JSON.parse(localStorage.getItem('sthirah_cart') || '[]');
-        const size = sizeInput.value;
-        const price = size === '1kg' ? 110 : 58; 
+        const size = '500g'; 
+        const price = 58; 
         const qtyToAdd = parseInt(productQty.value) || 1;
         
         const existing = cart.find(i => i.size === size);

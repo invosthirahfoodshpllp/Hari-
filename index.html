@@ -211,28 +211,12 @@
                     <p class="description">
                         Premium quality cane jaggery powder, sourced directly from our farm. Rich in iron, aids digestion, and acts as a natural detoxifier. Sthirah ensures pure, unadulterated sweetness for your healthy lifestyle.
                     </p>
-                    <div class="size-selector">
-                        <label>Size:</label>
-                        <div class="custom-select" id="customSelect">
-                            <div class="custom-select__trigger" id="selectTrigger">
-                                <span id="selectedText">Select Size</span>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                            </div>
-                            <div class="custom-select__options" id="selectOptions">
-                                <div class="custom-option" data-value="">Select Size</div>
-                                <div class="custom-option" data-value="500g">500g</div>
-                                <div class="custom-option" data-value="1kg">1kg</div>
-                            </div>
-                        </div>
-                        <input type="hidden" id="size" name="size" value="">
-                    </div>
-                    
-                    <div class="qty-selector" style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 1.25rem;">
-                        <label style="font-size: 0.85rem; font-weight: 600;">Qty:</label>
-                        <div style="display:flex; align-items:center; border: 1.5px solid var(--border); border-radius: 6px; overflow: hidden; max-width: 120px;">
-                            <button type="button" id="qtyMinus" style="flex:1; border:none; background:transparent; padding: 0.4rem; cursor:pointer; font-weight:bold; font-size:1.1rem; color:var(--text-color); transition:background 0.3s;">-</button>
-                            <input type="number" id="productQty" value="1" min="1" max="50" style="width: 40px; text-align:center; border:none; font-weight:700; font-family:inherit; font-size:0.95rem; background:var(--white);" readonly>
-                            <button type="button" id="qtyPlus" style="flex:1; border:none; background:transparent; padding: 0.4rem; cursor:pointer; font-weight:bold; font-size:1.1rem; color:var(--text-color); transition:background 0.3s;">+</button>
+                    <div class="qty-selector" style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 1.5rem; background: var(--white); border: 2px solid var(--accent-green); border-radius: 8px; padding: 0.5rem 1rem;">
+                        <label style="font-size: 1rem; font-weight: 700; color: var(--text-color);">Quantity:</label>
+                        <div style="display:flex; align-items:center;">
+                            <button type="button" id="qtyMinus" style="border:none; background:#eef7f1; border-radius: 50%; width: 35px; height: 35px; cursor:pointer; font-weight:bold; font-size:1.2rem; color:var(--accent-green); transition:all 0.3s; display:flex; align-items:center; justify-content:center;">-</button>
+                            <input type="number" id="productQty" value="1" min="1" max="50" style="width: 60px; text-align:center; border:none; font-weight:800; font-family:inherit; font-size:1.1rem; background:transparent;" readonly>
+                            <button type="button" id="qtyPlus" style="border:none; background:var(--accent-green); border-radius: 50%; width: 35px; height: 35px; cursor:pointer; font-weight:bold; font-size:1.2rem; color:var(--white); transition:all 0.3s; display:flex; align-items:center; justify-content:center;">+</button>
                         </div>
                     </div>
 
