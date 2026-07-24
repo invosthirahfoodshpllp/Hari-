@@ -726,7 +726,7 @@ img { max-width: 100%; display: block; }
 .nutrition-integrated {
     background: var(--card-bg);
     border-radius: var(--radius);
-    padding: 1.5rem 2rem;
+    padding: 1.25rem 1.5rem;
     box-shadow: var(--shadow);
     border-top: 4px solid var(--accent-green);
     position: relative;
@@ -743,17 +743,17 @@ img { max-width: 100%; display: block; }
     pointer-events: none;
 }
 .nutrition-integrated .nutrition-header {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 .nutrition-integrated .nutrition-header h4 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 800;
     color: var(--accent-green);
     margin-bottom: 0.2rem;
     letter-spacing: -0.5px;
 }
 .nutrition-integrated .nutrition-header p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
     font-weight: 500;
 }
@@ -762,26 +762,26 @@ img { max-width: 100%; display: block; }
     justify-content: space-between;
     align-items: center;
     background: var(--bg-color);
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.25rem;
     border-radius: 12px;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     border: 1px solid var(--border);
 }
 .nutrition-calories h3:first-child {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--text-color);
     margin: 0;
 }
 .nutrition-calories h3:last-child {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 900;
     color: var(--accent-green);
     margin: 0;
 }
 .nutrition-calories .per-serving {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     font-weight: 400;
     margin-top: 0.1rem;
@@ -794,9 +794,9 @@ img { max-width: 100%; display: block; }
 .nutrition-list li {
     display: flex;
     justify-content: space-between;
-    padding: 0.4rem 0;
+    padding: 0.25rem 0;
     border-bottom: 1px dashed var(--border);
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text-color);
     transition: background 0.3s;
 }
@@ -811,18 +811,18 @@ img { max-width: 100%; display: block; }
 .nutrition-list .dv-header {
     justify-content: flex-end;
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     border-bottom: 2px solid var(--border);
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
 }
 .nutrition-list .sub-item {
-    padding-left: 1.5rem;
+    padding-left: 1rem;
     color: var(--text-muted);
 }
 .nutrition-list .sub-sub-item {
-    padding-left: 2.5rem;
+    padding-left: 2rem;
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 .nutrition-list .mineral-item {
     border-bottom: 1px solid var(--border);
@@ -834,11 +834,11 @@ img { max-width: 100%; display: block; }
     border-bottom: none;
 }
 .nutrition-footnote {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
-    line-height: 1.5;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
+    line-height: 1.4;
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
     border-top: 1px solid var(--border);
 }
 
