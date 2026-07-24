@@ -67,23 +67,72 @@
             font-size: 1.2rem;
             font-weight: 800;
         }
-        .place-order-btn {
+        
+        /* Address Cards */
+        .saved-addresses {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .address-card {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            background: var(--white);
+        }
+        .address-card:hover {
+            border-color: #a3d9b5;
+        }
+        .address-card.selected {
+            border-color: var(--accent-green);
+            background: rgba(27,150,68,0.03);
+        }
+        .address-card p {
+            margin: 0 0 0.3rem 0;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        .address-card .name { font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; }
+        .edit-addr-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--accent-green);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .edit-addr-btn:hover { text-decoration: underline; }
+
+        .btn {
             width: 100%;
             background: var(--accent-green);
             color: var(--white);
             border: none;
             padding: 1rem;
-            border-radius: 30px;
+            border-radius: 6px;
             font-size: 1.1rem;
             font-weight: 700;
-            margin-top: 2rem;
             cursor: pointer;
             transition: background 0.3s;
         }
-        .place-order-btn:hover { background: #157936; }
-        .place-order-btn:disabled { background: #999; cursor: not-allowed; }
-        
-        /* Loading Overlay */
+        .btn:hover { background: #157936; }
+        .btn:disabled { background: #999; cursor: not-allowed; }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-color);
+            border: 2px dashed var(--border);
+        }
+        .btn-outline:hover { background: var(--bg-color); border-style: solid; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #ccc; }
+
         #loader {
             display: none;
             position: fixed;
@@ -99,9 +148,7 @@
         }
 
         @media (max-width: 768px) {
-            .checkout-grid {
-                grid-template-columns: 1fr;
-            }
+            .checkout-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -117,25 +164,43 @@
 
     <div class="checkout-page">
         <div class="container checkout-grid">
-            <!-- Left: Customer Details -->
+            <!-- Left: Addresses -->
             <div class="form-card">
-                <h2>Customer Details</h2>
-                <form id="checkoutForm">
+                <h2>Shipping Address</h2>
+                
+                <div id="loadingAddresses" style="text-align:center; padding: 2rem; color:var(--text-muted);">
+                    Loading addresses...
+                </div>
+
+                <div id="savedAddresses" class="saved-addresses" style="display:none;">
+                    <!-- Injected via JS -->
+                </div>
+
+                <button id="showAddrFormBtn" class="btn btn-outline" style="display:none; margin-bottom: 1rem; font-size:1rem; padding: 0.8rem;">+ Add New Address</button>
+
+                <form id="addressForm" style="display:none; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 1rem; font-size:1.1rem;" id="formTitle">Add New Address</h3>
+                    <input type="hidden" id="addrId">
                     <div class="form-group">
                         <label>Full Name *</label>
                         <input type="text" id="custName" required placeholder="John Doe">
                     </div>
                     <div class="form-group">
-                        <label>Phone Number *</label>
+                        <label>Contact Phone Number *</label>
                         <input type="tel" id="custPhone" required placeholder="9876543210">
                     </div>
                     <div class="form-group">
-                        <label>Shipping Address *</label>
-                        <textarea id="custAddress" required placeholder="123 Street, City..."></textarea>
+                        <label>Complete Address *</label>
+                        <textarea id="custAddress" required placeholder="House No, Street, Landmark, City..."></textarea>
                     </div>
                     <div class="form-group">
                         <label>Pincode / ZIP *</label>
                         <input type="text" id="custPin" required placeholder="636015">
+                    </div>
+                    
+                    <div style="display:flex; gap: 10px;">
+                        <button type="submit" class="btn" style="flex:2; padding:0.8rem; font-size:1rem;" id="saveAddrBtn">Save Address</button>
+                        <button type="button" class="btn btn-secondary" style="flex:1; padding:0.8rem; font-size:1rem;" id="cancelAddrBtn">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -148,17 +213,17 @@
                     <span>Total Amount</span>
                     <span>&#8377;<span id="summaryTotal">0</span></span>
                 </div>
-                <button type="submit" form="checkoutForm" class="place-order-btn" id="placeOrderBtn">Place Order</button>
+                <button type="button" class="btn" id="placeOrderBtn" style="border-radius:30px; margin-top:2rem;">Place Order</button>
             </div>
         </div>
     </div>
 
     <div id="loader">
-        <p>Processing your order...</p>
+        <p>Processing...</p>
     </div>
 
     <script type="module">
-        import { auth, db, onAuthStateChanged, collection, addDoc, serverTimestamp } from './firebase-config.js';
+        import { auth, db, onAuthStateChanged, collection, addDoc, getDocs, updateDoc, doc, serverTimestamp } from './firebase-config.js';
 
         const cart = JSON.parse(localStorage.getItem('sthirah_cart') || '[]');
         if (cart.length === 0) {
@@ -167,6 +232,17 @@
 
         let currentUser = null;
         let cartTotal = 0;
+        let selectedAddress = null;
+        let addresses = [];
+
+        // UI Elements
+        const loadingAddresses = document.getElementById('loadingAddresses');
+        const savedAddressesDiv = document.getElementById('savedAddresses');
+        const showAddrFormBtn = document.getElementById('showAddrFormBtn');
+        const addressForm = document.getElementById('addressForm');
+        const cancelAddrBtn = document.getElementById('cancelAddrBtn');
+        const formTitle = document.getElementById('formTitle');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
 
         // Populate Summary
         const summaryContainer = document.getElementById('summaryItems');
@@ -183,35 +259,175 @@
         document.getElementById('summaryTotal').textContent = cartTotal;
 
         // Auth guard
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                // Must be logged in to checkout
                 window.location.href = 'login.html?redirect=checkout.html';
             } else {
                 currentUser = user;
-                // Prefill name if available
-                if (user.displayName) document.getElementById('custName').value = user.displayName;
+                await loadAddresses();
             }
         });
 
-        // Handle Submit
-        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUser) return;
+        // Load Addresses
+        async function loadAddresses() {
+            loadingAddresses.style.display = 'block';
+            savedAddressesDiv.style.display = 'none';
+            addressForm.style.display = 'none';
+            showAddrFormBtn.style.display = 'none';
 
-            const btn = document.getElementById('placeOrderBtn');
-            const loader = document.getElementById('loader');
+            try {
+                const querySnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'addresses'));
+                addresses = [];
+                querySnapshot.forEach((doc) => {
+                    addresses.push({ id: doc.id, ...doc.data() });
+                });
+
+                renderAddresses();
+            } catch (error) {
+                console.error("Error fetching addresses:", error);
+                alert("Failed to load addresses.");
+            }
+            loadingAddresses.style.display = 'none';
+        }
+
+        // Render Addresses
+        function renderAddresses() {
+            if (addresses.length === 0) {
+                // Show form if no addresses
+                showAddrFormBtn.style.display = 'none';
+                openAddressForm();
+                return;
+            }
+
+            savedAddressesDiv.innerHTML = '';
+            addresses.forEach((addr, index) => {
+                const isSelected = selectedAddress && selectedAddress.id === addr.id;
+                
+                // If nothing selected, auto-select first one
+                if (!selectedAddress && index === 0) {
+                    selectAddress(addr);
+                    return; // Re-renders in selectAddress
+                }
+
+                savedAddressesDiv.innerHTML += `
+                    <div class="address-card ${isSelected ? 'selected' : ''}" onclick="selectAddressById('${addr.id}')">
+                        <button class="edit-addr-btn" onclick="event.stopPropagation(); editAddress('${addr.id}')">Edit</button>
+                        <p class="name">${addr.name}</p>
+                        <p>${addr.address}</p>
+                        <p>PIN: ${addr.pin}</p>
+                        <p>Ph: ${addr.phone}</p>
+                    </div>
+                `;
+            });
+
+            savedAddressesDiv.style.display = 'flex';
+            showAddrFormBtn.style.display = 'block';
+            addressForm.style.display = 'none';
+        }
+
+        // Global functions for inline onclicks
+        window.selectAddressById = (id) => {
+            const addr = addresses.find(a => a.id === id);
+            if (addr) selectAddress(addr);
+        };
+
+        window.editAddress = (id) => {
+            const addr = addresses.find(a => a.id === id);
+            if (!addr) return;
             
-            btn.disabled = true;
+            document.getElementById('addrId').value = addr.id;
+            document.getElementById('custName').value = addr.name;
+            document.getElementById('custPhone').value = addr.phone;
+            document.getElementById('custAddress').value = addr.address;
+            document.getElementById('custPin').value = addr.pin;
+            
+            formTitle.textContent = "Edit Address";
+            addressForm.style.display = 'block';
+            savedAddressesDiv.style.display = 'none';
+            showAddrFormBtn.style.display = 'none';
+        };
+
+        function selectAddress(addr) {
+            selectedAddress = addr;
+            renderAddresses();
+        }
+
+        function openAddressForm() {
+            document.getElementById('addressForm').reset();
+            document.getElementById('addrId').value = "";
+            formTitle.textContent = "Add New Address";
+            
+            // Prefill name if user has one
+            if(currentUser && currentUser.displayName && addresses.length === 0) {
+                document.getElementById('custName').value = currentUser.displayName;
+            }
+
+            addressForm.style.display = 'block';
+            savedAddressesDiv.style.display = 'none';
+            showAddrFormBtn.style.display = 'none';
+        }
+
+        showAddrFormBtn.addEventListener('click', openAddressForm);
+
+        cancelAddrBtn.addEventListener('click', () => {
+            if (addresses.length > 0) {
+                renderAddresses();
+            } else {
+                alert("You must add at least one address to proceed.");
+            }
+        });
+
+        // Save Form
+        addressForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveAddrBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            const addrData = {
+                name: document.getElementById('custName').value,
+                phone: document.getElementById('custPhone').value,
+                address: document.getElementById('custAddress').value,
+                pin: document.getElementById('custPin').value,
+            };
+            const addrId = document.getElementById('addrId').value;
+
+            try {
+                if (addrId) {
+                    // Update
+                    await updateDoc(doc(db, 'users', currentUser.uid, 'addresses', addrId), addrData);
+                } else {
+                    // Add New
+                    await addDoc(collection(db, 'users', currentUser.uid, 'addresses'), addrData);
+                }
+                await loadAddresses(); // Reload handles selection and UI
+            } catch (error) {
+                console.error("Error saving address:", error);
+                alert("Error saving address. Please try again.");
+            }
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Address';
+        });
+
+        // Place Order
+        placeOrderBtn.addEventListener('click', async () => {
+            if (!currentUser) return;
+            if (!selectedAddress) {
+                alert("Please select or add a shipping address before placing your order.");
+                return;
+            }
+
+            const loader = document.getElementById('loader');
+            placeOrderBtn.disabled = true;
             loader.style.display = 'flex';
 
             const orderData = {
                 customerId: currentUser.uid,
-                customerEmail: currentUser.email,
-                customerName: document.getElementById('custName').value,
-                customerPhone: document.getElementById('custPhone').value,
-                customerAddress: document.getElementById('custAddress').value,
-                customerPin: document.getElementById('custPin').value,
+                customerEmail: currentUser.email || 'Phone User',
+                customerName: selectedAddress.name,
+                customerPhone: selectedAddress.phone,
+                customerAddress: selectedAddress.address,
+                customerPin: selectedAddress.pin,
                 items: cart,
                 totalAmount: cartTotal,
                 status: 'Pending',
@@ -234,7 +450,7 @@
             } catch (error) {
                 console.error("Error adding document: ", error);
                 alert("There was an error processing your order. Please try again.");
-                btn.disabled = false;
+                placeOrderBtn.disabled = false;
                 loader.style.display = 'none';
             }
         });
