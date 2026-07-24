@@ -507,11 +507,12 @@ img { max-width: 100%; display: block; }
 .product-image-container {
     position: relative;
     background-color: var(--white);
-    padding: 1.5rem;
+    padding: 0;
     width: 100%;
     max-width: 480px;
     display: flex;
     justify-content: center;
+    align-items: center;
     border-radius: var(--radius);
     box-shadow: 0 10px 40px rgba(0,0,0,0.1);
     overflow: hidden;
@@ -532,7 +533,7 @@ img { max-width: 100%; display: block; }
 /* Product Flip Card */
 .product-flip-card {
     width: 100%;
-    max-width: 400px;
+    max-width: 440px;
     perspective: 1000px;
     margin: 0 auto;
 }
@@ -540,7 +541,7 @@ img { max-width: 100%; display: block; }
 .flip-card-inner {
     position: relative;
     width: 100%;
-    padding-bottom: 120%;
+    padding-bottom: 105%;
     transform-style: preserve-3d;
     /* No CSS transition – JS controls rotation in real-time */
     will-change: transform;
