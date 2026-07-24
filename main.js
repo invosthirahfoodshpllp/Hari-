@@ -206,8 +206,8 @@ if (cartBtn) {
 
         // Add to local cart
         const cart = JSON.parse(localStorage.getItem('sthirah_cart') || '[]');
-        const size = '500g'; 
-        const price = 58; 
+        const size = '1kg'; 
+        const price = 110; 
         const qtyToAdd = parseInt(productQty.value) || 1;
         
         const existing = cart.find(i => i.size === size);
