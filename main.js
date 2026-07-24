@@ -207,7 +207,7 @@ if (cartBtn) {
         // Add to local cart
         const cart = JSON.parse(localStorage.getItem('sthirah_cart') || '[]');
         const size = '500g'; 
-        const price = 58; 
+        const price = 55; 
         
         let qtyToAdd = parseInt(productQty.value) || 2;
         if (qtyToAdd < 2) qtyToAdd = 2; // Hard enforce min 2
