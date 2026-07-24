@@ -184,12 +184,12 @@ const productQty = document.getElementById('productQty');
 
 if (qtyMinus && qtyPlus && productQty) {
     qtyMinus.addEventListener('click', () => {
-        let val = parseInt(productQty.value) || 1;
-        if (val > 1) productQty.value = val - 1;
+        let val = parseInt(productQty.value) || 2;
+        if (val > 2) productQty.value = val - 1; // Min 2
     });
     qtyPlus.addEventListener('click', () => {
-        let val = parseInt(productQty.value) || 1;
-        if (val < 50) productQty.value = val + 1;
+        let val = parseInt(productQty.value) || 2;
+        if (val < 200) productQty.value = val + 1;
     });
 }
 
@@ -206,9 +206,11 @@ if (cartBtn) {
 
         // Add to local cart
         const cart = JSON.parse(localStorage.getItem('sthirah_cart') || '[]');
-        const size = '1kg'; 
-        const price = 110; 
-        const qtyToAdd = parseInt(productQty.value) || 1;
+        const size = '500g'; 
+        const price = 58; 
+        
+        let qtyToAdd = parseInt(productQty.value) || 2;
+        if (qtyToAdd < 2) qtyToAdd = 2; // Hard enforce min 2
         
         const existing = cart.find(i => i.size === size);
         if (existing) {
@@ -222,8 +224,8 @@ if (cartBtn) {
         cartBtn.textContent = '✓ Added to Cart!';
         cartBtn.style.backgroundColor = '#1b9644';
         
-        // Reset qty
-        productQty.value = 1;
+        // Reset qty back to min 2
+        productQty.value = 2;
 
         setTimeout(() => {
             cartBtn.textContent = 'Add to Cart';
